@@ -20,8 +20,7 @@ func printReleaseInfo(state string, rel *Release) {
 
 func main() {
 	args, err := parseArgsAndEnvs()
-	// TODO: fix these err != nill && !args.Quiet, is not correct
-	if err != nil && !args.Quiet {
+	if err != nil {
 		fmt.Println(err)
 		flag.Usage()
 		os.Exit(1)
@@ -37,7 +36,7 @@ func main() {
 		Assets:         args.Assets,
 	}
 
-	// how do I make one type be both?????
+	// Client used to create release
 	var client ReleaseClient
 
 	if args.Backend == "github" {
@@ -48,45 +47,45 @@ func main() {
 		client = NewBitbucketReleaseClient(release)
 	}
 
-	_, rel, err := client.doesTagExist()
+	tag, release, err := client.doesTagExist()
 	if err != nil {
-		printReleaseInfo("Existing", rel)
+		fmt.Println("Error checking tag:")
+		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	var deleteErr error
-	var deletedRelease *Release
+	if tag && !args.DeleteRelease {
+		printReleaseInfo("Existing", release)
+		os.Exit(1)
+	} else if tag && args.DeleteRelease {
+		// if there's an existing tag its deleted before creating a new one
+		release, err = client.deleteRelease()
+		if err != nil {
+			fmt.Println("Error deleting release:")
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		if !args.Quiet {
+			printReleaseInfo("Deleted", release)
+		}
+	}
 
 	release, err = client.createRelease()
 	if err != nil {
-		if os.Getenv("OLSU_DELETE_RELEASE") != "" {
-			deletedRelease, deleteErr = client.deleteRelease()
-		}
-	}
-
-	if !args.Quiet && err != nil {
 		fmt.Println("Error creating release:")
 		fmt.Println(err)
-		if deleteErr != nil {
-			fmt.Println("Error deleting release:")
-			fmt.Println(deleteErr)
-		} else {
-			printReleaseInfo("Deleted", deletedRelease)
-		}
 		os.Exit(1)
 	}
 
 	if args.Quiet {
 		fmt.Printf("%v", release.ID)
+		os.Exit(0)
 	}
 
-	if !args.Quiet {
-		printReleaseInfo("Created", release)
-		if len(release.Assets) > 0 {
-			fmt.Println("Uploaded assets:")
-			for _, asset := range release.Assets {
-				fmt.Println(" -", asset)
-			}
+	printReleaseInfo("Created", release)
+	if len(release.Assets) > 0 {
+		fmt.Println("Uploaded assets:")
+		for _, asset := range release.Assets {
+			fmt.Println(" -", asset)
 		}
 	}
 
