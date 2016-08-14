@@ -14,7 +14,7 @@ type BitbucketRelease struct {
 
 // NewBitbucketReleaseClient creates a new release client for bitbucket
 func NewBitbucketReleaseClient(rel *Release) *BitbucketRelease {
-	return &BitbucketRelease{}
+	return &BitbucketRelease{release: rel}
 }
 
 // createRelease creates a new release on bitbucket, if theres any extra assets
