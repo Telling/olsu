@@ -127,13 +127,14 @@ func (g *GithubRelease) doesTagExist() (bool, *Release, error) {
 		args.Repository,
 		g.release.ReleaseVersion,
 	)
+	if err != nil && response == nil {
+		return false, g.release, err
+	}
 	if response == nil {
 		return false, g.release, fmt.Errorf("No response from github")
 	}
-	if err != nil {
-		return false, g.release, err
-	}
 	if checkRelease != nil {
+		g.release.ID = *checkRelease.ID
 		return true, g.release, nil
 	}
 
