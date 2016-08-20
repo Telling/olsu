@@ -120,7 +120,8 @@ func (g *GithubRelease) uploadAssets() (*Release, error) {
 	return g.release, nil
 }
 
-// doesTagExist checks if a given release (tag) exists.
+// doesTagExist checks if a given release (tag) exists. It updates and returns
+// g.release updated with information from origin.
 func (g *GithubRelease) doesTagExist() (bool, *Release, error) {
 	checkRelease, response, err := g.client.Repositories.GetReleaseByTag(
 		args.Owner,
@@ -134,9 +135,26 @@ func (g *GithubRelease) doesTagExist() (bool, *Release, error) {
 		return false, g.release, fmt.Errorf("No response from github")
 	}
 	if checkRelease != nil {
-		g.release.ID = *checkRelease.ID
+		g.updateRelease(checkRelease)
 		return true, g.release, nil
 	}
 
 	return false, g.release, nil
+}
+
+// updateRelease updates the release. Used if the tag exists.
+func (g *GithubRelease) updateRelease(ghRelease *github.RepositoryRelease) error {
+	g.release.ReleaseName = *ghRelease.Name
+	g.release.ReleaseText = *ghRelease.Body
+	g.release.ReleaseVersion = *ghRelease.TagName
+	g.release.Draft = *ghRelease.Draft
+	g.release.Prerelease = *ghRelease.Prerelease
+	g.release.ID = *ghRelease.ID
+	var assets []string
+	for _, asset := range ghRelease.Assets {
+		assets = append(assets, *asset.Name)
+	}
+	g.release.Assets = assets
+
+	return nil
 }
