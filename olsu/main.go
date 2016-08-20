@@ -36,15 +36,25 @@ func main() {
 		Assets:         args.Assets,
 	}
 
+	var backendClients = [...]string{
+		"github",
+		"bitbucket",
+	}
+
 	// Client used to create release
 	var client ReleaseClient
 
-	if args.Backend == "github" {
+	switch {
+	// github
+	case args.Backend == backendClients[0]:
 		client = NewGithubReleaseClient(release)
-	}
-
-	if args.Backend == "bitbucket" {
+	// bitbucket
+	case args.Backend == backendClients[1]:
 		client = NewBitbucketReleaseClient(release)
+	default:
+		fmt.Println(fmt.Sprintf("Unknown backend: %v", args.Backend))
+		fmt.Println(fmt.Sprintf("Supported backends: %v", backendClients))
+		os.Exit(1)
 	}
 
 	tag, release, err := client.doesTagExist()
