@@ -33,7 +33,7 @@ func parseArgsAndEnvs() (OlsuArgs, error) {
 	flag.BoolVar(&args.Prerelease, "p", false, "if it's a prerelease.")
 	flag.StringVar(&args.Token, "t", "", "github token")
 	flag.BoolVar(&args.Quiet, "q", false, "Only output release id.")
-	flag.StringVar(&args.Backend, "b", "github", "Backend (github)")
+	flag.StringVar(&args.Backend, "b", "github", "backend")
 
 	flag.Usage = func() {
 		fmt.Printf("Usage of %s:\n", os.Args[0])
