@@ -45,7 +45,7 @@ func (g *GithubRelease) createRelease() (*Release, error) {
 		&_githubRelease,
 	)
 	if err != nil {
-		return g.release, err
+		return nil, err
 	}
 
 	// Set release id
@@ -92,10 +92,12 @@ func (g *GithubRelease) uploadAssets() (*Release, error) {
 
 	for _, asset := range g.release.Assets {
 		if _, err := os.Stat(asset); os.IsNotExist(err) {
+			g.release.Assets = []string{}
 			return g.release, err
 		}
 		file, err := os.Open(asset)
 		if err != nil {
+			g.release.Assets = []string{}
 			return g.release, err
 		}
 		uploadOptions := &github.UploadOptions{

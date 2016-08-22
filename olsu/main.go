@@ -80,9 +80,17 @@ func main() {
 	}
 
 	release, err = client.createRelease()
-	if err != nil {
+	if release == nil && err != nil {
 		fmt.Println("Error creating release:")
 		fmt.Println(err)
+		os.Exit(1)
+	}
+	// Release created, but error uploading assets.
+	if release != nil && err != nil {
+		fmt.Println("Error uploading assets:")
+		fmt.Println(release.Assets)
+		fmt.Println(err)
+		printReleaseInfo("Created", release)
 		os.Exit(1)
 	}
 
