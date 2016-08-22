@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -e
+
+docker run --rm --log-driver none \
+    -v "${PWD}/olsu":/go/src/olsu \
+    -v "${PWD}/olsu_build":/bin/olsu_build \
+    -w /bin \
+    golang:1.7.0 \
+    bash -c "chmod +x olsu_build && ./olsu_build"
+
+output_files=(
+    "olsu-darwin-386.zip"
+    "olsu-darwin-amd64.zip"
+    "olsu-linux-386.zip"
+    "olsu-linux-amd64.zip"
+)
+
+for file in "${output_files[@]}"; do
+    zip -j "${file}" "olsu/${file%.zip}"
+    rm "olsu/${file%.zip}"
+done
+
+GOARCH="amd64"
+GOOS="darwin"
+
+olsu="olsu-${GOOS}-${GOARCH}"
+
+unzip "${olsu}.zip"
+
+export OLSU_REPOSITORY=olsu
+export OLSU_OWNER=Telling
+
+./"$olsu" "Olsu v0.0.1" "v0.0.1" "foo bar test" "${output_files[@]}"
+
+rm "${output_files[@]}"
+rm "$olsu"

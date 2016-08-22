@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+goos_arr=(
+    "darwin"
+    "linux"
+)
+goarch_arr=(
+    "386"
+    "amd64"
+)
+
+cd /go/src/olsu || exit
+
+go get
+
+for g in "${goos_arr[@]}"; do
+    for a in "${goarch_arr[@]}"; do
+        GOOS="$g" GOARCH="$a" go build -v -o "olsu-${g}-${a}"
+    done
+done
