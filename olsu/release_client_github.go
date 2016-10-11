@@ -48,10 +48,9 @@ func (g *GithubRelease) createRelease() (*Release, error) {
 		return nil, err
 	}
 
-	// Set release id
-	g.release.ID = *githubRelease.ID
+	g.updateRelease(githubRelease)
 
-	if len(args.Assets) > 0 {
+	if len(args.Release.Assets) > 0 {
 		_, err := g.uploadAssets()
 		if err != nil {
 			return g.release, err
@@ -149,14 +148,24 @@ func (g *GithubRelease) updateRelease(ghRelease *github.RepositoryRelease) error
 	g.release.ReleaseName = *ghRelease.Name
 	g.release.ReleaseText = *ghRelease.Body
 	g.release.ReleaseVersion = *ghRelease.TagName
-	g.release.Draft = *ghRelease.Draft
-	g.release.Prerelease = *ghRelease.Prerelease
 	g.release.ID = *ghRelease.ID
-	var assets []string
-	for _, asset := range ghRelease.Assets {
-		assets = append(assets, *asset.Name)
+
+	// Update according to github if input isn't specified as draft/prerelease
+	if g.release.Draft == false {
+		g.release.Draft = *ghRelease.Draft
 	}
-	g.release.Assets = assets
+	if g.release.Prerelease == false {
+		g.release.Prerelease = *ghRelease.Prerelease
+	}
+
+	// Update according to github if there's custom binaries in release
+	if len(ghRelease.Assets) > 0 {
+		var assets []string
+		for _, asset := range ghRelease.Assets {
+			assets = append(assets, *asset.Name)
+		}
+		g.release.Assets = assets
+	}
 
 	return nil
 }
