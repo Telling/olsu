@@ -22,13 +22,14 @@ type OlsuArgs struct {
 func parseArgsAndEnvs() (OlsuArgs, error) {
 	var args OlsuArgs
 
-	flag.StringVar(&args.Owner, "o", "", "specify the repository owner.")
-	flag.StringVar(&args.Repository, "r", "", "specify a repository.")
+	flag.StringVar(&args.Owner, "o", "", "owner of the repository.")
+	flag.StringVar(&args.Repository, "r", "", "name of the repository.")
 	flag.BoolVar(&args.Release.Draft, "d", false, "if it's a draft.")
 	flag.BoolVar(&args.Release.Prerelease, "p", false, "if it's a prerelease.")
-	flag.StringVar(&args.Token, "t", "", "github token")
-	flag.BoolVar(&args.Quiet, "q", false, "Only output release id.")
+	flag.StringVar(&args.Token, "t", "", "access token for github.")
+	flag.BoolVar(&args.Quiet, "q", false, "quiet, only output release id.")
 	flag.StringVar(&args.Backend, "b", "github", "backend")
+	flag.BoolVar(&args.DeleteRelease, "dr", false, "delete release if it exists before creating new.")
 
 	flag.Usage = func() {
 		fmt.Printf("Usage of %s:\n", os.Args[0])
