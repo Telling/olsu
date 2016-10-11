@@ -23,7 +23,7 @@ func printReleaseInfo(state string, rel *Release) {
 var args OlsuArgs
 
 func main() {
-	args, err := parseArgsAndEnvs()
+	err := parseArgsAndEnvs()
 	if err != nil {
 		fmt.Println(err)
 		flag.Usage()

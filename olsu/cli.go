@@ -19,9 +19,7 @@ type OlsuArgs struct {
 
 // parseArgsAndEnvs parses commandline arguments, flags and environment variables
 // It returns an instance of OlsuArgs
-func parseArgsAndEnvs() (OlsuArgs, error) {
-	var args OlsuArgs
-
+func parseArgsAndEnvs() error {
 	flag.StringVar(&args.Owner, "o", "", "owner of the repository.")
 	flag.StringVar(&args.Repository, "r", "", "name of the repository.")
 	flag.BoolVar(&args.Release.Draft, "d", false, "if it's a draft.")
@@ -43,7 +41,7 @@ func parseArgsAndEnvs() (OlsuArgs, error) {
 	numRequiredArgs := 3
 
 	if len(inputArgs) < numRequiredArgs {
-		return args, fmt.Errorf("name, version and description are required arguments")
+		return fmt.Errorf("name, version and description are required arguments")
 	}
 
 	args.Release.ReleaseName = inputArgs[0]
@@ -68,14 +66,14 @@ func parseArgsAndEnvs() (OlsuArgs, error) {
 	}
 
 	if args.Token == "" && os.Getenv("OLSU_TOKEN") == "" {
-		return args, fmt.Errorf("-t or env. variable OLSU_TOKEN is required")
+		return fmt.Errorf("-t or env. variable OLSU_TOKEN is required")
 	}
 	if args.Owner == "" && os.Getenv("OLSU_OWNER") == "" {
-		return args, fmt.Errorf("-o or env. variable OLSU_OWNER is required")
+		return fmt.Errorf("-o or env. variable OLSU_OWNER is required")
 	}
 	if args.Repository == "" && os.Getenv("OLSU_REPOSITORY") == "" {
-		return args, fmt.Errorf("-o or env. variable OLSU_REPOSITORY is required")
+		return fmt.Errorf("-o or env. variable OLSU_REPOSITORY is required")
 	}
 
-	return args, nil
+	return nil
 }
