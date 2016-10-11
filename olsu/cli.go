@@ -6,31 +6,26 @@ import (
 	"os"
 )
 
-// OlsuArgs keeps all the info
-// TODO: use an OlsuRelease to keep release information instead
+// OlsuArgs keeps all information regarding arguments and release
 type OlsuArgs struct {
-	Owner          string
-	Repository     string
-	ReleaseText    string
-	ReleaseName    string
-	ReleaseVersion string
-	Assets         []string
-	Draft          bool
-	Prerelease     bool
-	Token          string
-	Quiet          bool
-	DeleteRelease  bool
-	Backend        string
+	Release       Release
+	Owner         string
+	Repository    string
+	Token         string
+	Quiet         bool
+	DeleteRelease bool
+	Backend       string
 }
 
 // parseArgsAndEnvs parses commandline arguments, flags and environment variables
 // It returns an instance of OlsuArgs
 func parseArgsAndEnvs() (OlsuArgs, error) {
-	// TODO: add docstring
+	var args OlsuArgs
+
 	flag.StringVar(&args.Owner, "o", "", "specify the repository owner.")
 	flag.StringVar(&args.Repository, "r", "", "specify a repository.")
-	flag.BoolVar(&args.Draft, "d", false, "if it's a draft.")
-	flag.BoolVar(&args.Prerelease, "p", false, "if it's a prerelease.")
+	flag.BoolVar(&args.Release.Draft, "d", false, "if it's a draft.")
+	flag.BoolVar(&args.Release.Prerelease, "p", false, "if it's a prerelease.")
 	flag.StringVar(&args.Token, "t", "", "github token")
 	flag.BoolVar(&args.Quiet, "q", false, "Only output release id.")
 	flag.StringVar(&args.Backend, "b", "github", "backend")
@@ -50,16 +45,14 @@ func parseArgsAndEnvs() (OlsuArgs, error) {
 		return args, fmt.Errorf("name, version and description are required arguments")
 	}
 
-	args.ReleaseName = inputArgs[0]
-	args.ReleaseVersion = inputArgs[1]
-	args.ReleaseText = inputArgs[2]
+	args.Release.ReleaseName = inputArgs[0]
+	args.Release.ReleaseVersion = inputArgs[1]
+	args.Release.ReleaseText = inputArgs[2]
 
 	if len(inputArgs) > numRequiredArgs {
-		args.Assets = inputArgs[3:]
+		args.Release.Assets = inputArgs[3:]
 	}
 
-	// TODO: make function for this
-	// If env vars are set, they overrule
 	if os.Getenv("OLSU_OWNER") != "" {
 		args.Owner = os.Getenv("OLSU_OWNER")
 	}
