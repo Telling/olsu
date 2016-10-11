@@ -6,17 +6,21 @@ import (
 	"os"
 )
 
-var (
-	args OlsuArgs
-)
-
 // printReleaseInfo pretty prints release info
 func printReleaseInfo(state string, rel *Release) {
 	fmt.Println(fmt.Sprintf("%v release of %v (%v/%v)", state, args.Repository, args.Owner, args.Repository))
 	fmt.Println(fmt.Sprintf(" - name: %v (ID: %v)", rel.ReleaseName, rel.ID))
 	fmt.Println(" - tag:", rel.ReleaseVersion)
 	fmt.Println(" - description:", rel.ReleaseText)
+	if rel.Draft {
+		fmt.Println(" - Draft:", rel.Draft)
+	}
+	if rel.Prerelease {
+		fmt.Println(" - Pre-release:", rel.Prerelease)
+	}
 }
+
+var args OlsuArgs
 
 func main() {
 	args, err := parseArgsAndEnvs()
@@ -28,12 +32,12 @@ func main() {
 
 	var release *Release
 	release = &Release{
-		ReleaseName:    args.ReleaseName,
-		ReleaseVersion: args.ReleaseVersion,
-		ReleaseText:    args.ReleaseText,
-		Draft:          args.Draft,
-		Prerelease:     args.Prerelease,
-		Assets:         args.Assets,
+		ReleaseName:    args.Release.ReleaseName,
+		ReleaseVersion: args.Release.ReleaseVersion,
+		ReleaseText:    args.Release.ReleaseText,
+		Draft:          args.Release.Draft,
+		Prerelease:     args.Release.Prerelease,
+		Assets:         args.Release.Assets,
 	}
 
 	var backendClients = [...]string{
