@@ -13,8 +13,8 @@ cd /go/src/olsu || exit
 
 go get
 
-for g in "${goos_arr[@]}"; do
-    for a in "${goarch_arr[@]}"; do
-        GOOS="$g" GOARCH="$a" go build -v -o "olsu-${g}-${a}"
+for os in "${goos_arr[@]}"; do
+    for arch in "${goarch_arr[@]}"; do
+        GOOS="$os" GOARCH="$arch" go build -v -o "olsu-${os}-${arch}"
     done
 done

@@ -30,8 +30,9 @@ unzip "${olsu}.zip"
 
 export OLSU_REPOSITORY=olsu
 export OLSU_OWNER=Telling
+export OLSU_DELETE_RELEASE=yes
 
-./"$olsu" "Olsu v0.0.1" "v0.0.1" "foo bar test" "${output_files[@]}"
+./"$olsu" "Olsu v0.1.0" "v0.1.0" "Initial release of olsu." "${output_files[@]}"
 
 rm "${output_files[@]}"
 rm "$olsu"
